@@ -1,4 +1,4 @@
-const MULTIPLICATION_TIME_MS = 5000;
+﻿const MULTIPLICATION_TIME_MS = 5000;
 const DIVISION_TIME_MS = 8000;
 const FEEDBACK_DELAY_MS = 700;
 const MIN_WEIGHT = 0.35;
@@ -299,7 +299,7 @@ function startTimer() {
 
     if (timeLeftMs === 0) {
       clearInterval(state.timerId);
-      handleResult(false, 'Ups! Czas minal.');
+      handleResult(false, 'Ups! Czas minął.');
     }
   }, 100);
 }
@@ -314,7 +314,7 @@ function nextRound() {
   state.currentOptions = createAnswerOptions(state.currentQuestion);
   state.locked = false;
   renderQuestion();
-  setFeedback('idle', 'Wybierz odpowiedz');
+  setFeedback('idle', 'Wybierz odpowiedź');
   startTimer();
 }
 
@@ -350,7 +350,7 @@ function handleResult(isCorrect, message) {
 }
 
 function handleAnswer(option) {
-  handleResult(option.isCorrect, option.isCorrect ? 'Brawo!' : 'To nie ta odpowiedz.');
+  handleResult(option.isCorrect, option.isCorrect ? 'Brawo!' : 'To nie ta odpowiedź.');
 }
 
 function resetGame() {
