@@ -394,7 +394,7 @@ function handleResult(isCorrect) {
   if (isCorrect) {
     state.correctCount += 1;
     state.revealedCount = Math.min(100, state.revealedCount + 1);
-    state.revealAnswerInQuestion = false;
+    state.revealAnswerInQuestion = true;
   } else {
     state.wrongCount += 1;
     scheduleRepeat(currentQuestionId);
