@@ -1,6 +1,7 @@
 ﻿const MULTIPLICATION_TIME_MS = 5000;
 const DIVISION_TIME_MS = 8000;
 const FEEDBACK_DELAY_MS = 700;
+const WRONG_FEEDBACK_DELAY_MS = 3000;
 const MIN_WEIGHT = 0.35;
 const MAX_WEIGHT = 6;
 
@@ -15,6 +16,7 @@ const dragonCover = document.getElementById('dragon-cover');
 const timeLeftNode = document.getElementById('time-left');
 const timerBar = document.getElementById('timer-bar');
 const timerFill = document.getElementById('timer-fill');
+const questionBoxNode = document.querySelector('.question-box');
 const questionTextNode = document.getElementById('question-text');
 const feedbackBadge = document.getElementById('feedback-badge');
 const answersGrid = document.getElementById('answers-grid');
@@ -30,6 +32,10 @@ function shuffle(array) {
   }
 
   return clone;
+}
+
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function createQuestionBank() {
@@ -204,9 +210,55 @@ const state = {
   timerId: null,
   timeoutId: null,
   startedAt: 0,
+  questionsServed: 0,
+  scheduledRepeats: [],
+  revealAnswerInQuestion: false,
   locked: false,
   finished: false,
 };
+
+function formatQuestionText(question, revealAnswer = false) {
+  if (!revealAnswer) {
+    return question.prompt;
+  }
+
+  if (question.type === 'division') {
+    return `${question.left} : ${question.right} = ${question.answer}`;
+  }
+
+  return `${question.left} x ${question.right} = ${question.answer}`;
+}
+
+function scheduleRepeat(questionId) {
+  const delay = randomInt(2, 5);
+  const dueAt = state.questionsServed + delay;
+  const expireAt = state.questionsServed + 5;
+
+  state.scheduledRepeats = state.scheduledRepeats.filter((entry) => entry.questionId !== questionId);
+  state.scheduledRepeats.push({ questionId, dueAt, expireAt });
+}
+
+function pickScheduledRepeatQuestion() {
+  const activeEntries = state.scheduledRepeats
+    .filter((entry) => entry.expireAt >= state.questionsServed)
+    .sort((first, second) => first.dueAt - second.dueAt);
+
+  state.scheduledRepeats = activeEntries;
+
+  const eligibleEntry = activeEntries.find(
+    (entry) => entry.dueAt <= state.questionsServed && !state.recentIds.includes(entry.questionId),
+  );
+
+  if (!eligibleEntry) {
+    return null;
+  }
+
+  state.scheduledRepeats = state.scheduledRepeats.filter(
+    (entry) => entry.questionId !== eligibleEntry.questionId,
+  );
+
+  return state.questionBank.find((question) => question.id === eligibleEntry.questionId) ?? null;
+}
 
 function buildDragonCover() {
   dragonCover.innerHTML = '';
@@ -245,6 +297,9 @@ function setFeedback(type, message) {
   if (type === 'error') {
     appShell.classList.add('app-shell--error');
   }
+
+  questionBoxNode.classList.toggle('question-box--error', type === 'error');
+  questionBoxNode.classList.toggle('question-box--success', type === 'success');
 }
 
 function renderStats() {
@@ -255,7 +310,10 @@ function renderStats() {
 }
 
 function renderQuestion() {
-  questionTextNode.textContent = state.currentQuestion.prompt;
+  questionTextNode.textContent = formatQuestionText(
+    state.currentQuestion,
+    state.revealAnswerInQuestion,
+  );
   answersGrid.innerHTML = '';
 
   state.currentOptions.forEach((option) => {
@@ -299,7 +357,7 @@ function startTimer() {
 
     if (timeLeftMs === 0) {
       clearInterval(state.timerId);
-      handleResult(false, 'Ups! Czas minął.');
+      handleResult(false);
     }
   }, 100);
 }
@@ -310,15 +368,18 @@ function nextRound() {
     return;
   }
 
-  state.currentQuestion = pickNextQuestion(state.questionBank, state.recentIds);
+  state.currentQuestion = pickScheduledRepeatQuestion()
+    ?? pickNextQuestion(state.questionBank, state.recentIds);
   state.currentOptions = createAnswerOptions(state.currentQuestion);
+  state.questionsServed += 1;
+  state.revealAnswerInQuestion = false;
   state.locked = false;
   renderQuestion();
   setFeedback('idle', 'Wybierz odpowiedź');
   startTimer();
 }
 
-function handleResult(isCorrect, message) {
+function handleResult(isCorrect) {
   if (state.locked || state.finished) {
     return;
   }
@@ -333,24 +394,30 @@ function handleResult(isCorrect, message) {
   if (isCorrect) {
     state.correctCount += 1;
     state.revealedCount = Math.min(100, state.revealedCount + 1);
+    state.revealAnswerInQuestion = false;
   } else {
     state.wrongCount += 1;
+    scheduleRepeat(currentQuestionId);
+    state.revealAnswerInQuestion = true;
   }
 
   state.recentIds = [currentQuestionId, ...state.recentIds].slice(0, 4);
   renderStats();
   renderDragonTiles();
-  setFeedback(isCorrect ? 'success' : 'error', message);
+  setFeedback(
+    isCorrect ? 'success' : 'error',
+    isCorrect ? 'Brawo!' : `Poprawna odpowiedź: ${state.currentQuestion.answer}`,
+  );
   renderQuestion();
 
   clearTimeout(state.timeoutId);
   state.timeoutId = window.setTimeout(() => {
     nextRound();
-  }, FEEDBACK_DELAY_MS);
+  }, isCorrect ? FEEDBACK_DELAY_MS : WRONG_FEEDBACK_DELAY_MS);
 }
 
 function handleAnswer(option) {
-  handleResult(option.isCorrect, option.isCorrect ? 'Brawo!' : 'To nie ta odpowiedź.');
+  handleResult(option.isCorrect);
 }
 
 function resetGame() {
@@ -365,6 +432,9 @@ function resetGame() {
   state.recentIds = [];
   state.currentQuestion = null;
   state.currentOptions = [];
+  state.questionsServed = 0;
+  state.scheduledRepeats = [];
+  state.revealAnswerInQuestion = false;
   state.locked = false;
   state.finished = false;
 
