@@ -300,6 +300,7 @@ function setFeedback(type, message) {
 
   questionBoxNode.classList.toggle('question-box--error', type === 'error');
   questionBoxNode.classList.toggle('question-box--success', type === 'success');
+  questionBoxNode.classList.toggle('question-box--answer', type === 'error' && state.revealAnswerInQuestion);
 }
 
 function renderStats() {
