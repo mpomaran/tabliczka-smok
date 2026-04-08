@@ -213,6 +213,8 @@ const state = {
   questionsServed: 0,
   scheduledRepeats: [],
   revealAnswerInQuestion: false,
+  feedbackType: 'idle',
+  selectedOptionValue: null,
   locked: false,
   finished: false,
 };
@@ -281,6 +283,7 @@ function renderDragonTiles() {
 }
 
 function setFeedback(type, message) {
+  state.feedbackType = type;
   feedbackBadge.textContent = message;
   feedbackBadge.className = 'feedback-badge';
   if (type !== 'idle') {
@@ -297,9 +300,7 @@ function setFeedback(type, message) {
   if (type === 'error') {
     appShell.classList.add('app-shell--error');
   }
-
-  questionBoxNode.classList.toggle('question-box--error', type === 'error');
-  questionBoxNode.classList.toggle('question-box--success', type === 'success');
+  questionBoxNode.classList.toggle('question-box--solved', state.revealAnswerInQuestion);
 }
 
 function renderStats() {
@@ -314,6 +315,7 @@ function renderQuestion() {
     state.currentQuestion,
     state.revealAnswerInQuestion,
   );
+  questionTextNode.classList.toggle('question-text--solved', state.revealAnswerInQuestion);
   answersGrid.innerHTML = '';
 
   state.currentOptions.forEach((option) => {
@@ -373,6 +375,7 @@ function nextRound() {
   state.currentOptions = createAnswerOptions(state.currentQuestion);
   state.questionsServed += 1;
   state.revealAnswerInQuestion = false;
+  state.selectedOptionValue = null;
   state.locked = false;
   renderQuestion();
   setFeedback('idle', 'Wybierz odpowiedź');
@@ -406,7 +409,7 @@ function handleResult(isCorrect) {
   renderDragonTiles();
   setFeedback(
     isCorrect ? 'success' : 'error',
-    isCorrect ? 'Brawo!' : `Poprawna odpowiedź: ${state.currentQuestion.answer}`,
+    isCorrect ? 'Brawo!' : '',
   );
   renderQuestion();
 
@@ -417,6 +420,7 @@ function handleResult(isCorrect) {
 }
 
 function handleAnswer(option) {
+  state.selectedOptionValue = option.value;
   handleResult(option.isCorrect);
 }
 
@@ -435,6 +439,8 @@ function resetGame() {
   state.questionsServed = 0;
   state.scheduledRepeats = [];
   state.revealAnswerInQuestion = false;
+  state.feedbackType = 'idle';
+  state.selectedOptionValue = null;
   state.locked = false;
   state.finished = false;
 
