@@ -1,7 +1,7 @@
 ﻿const MULTIPLICATION_TIME_MS = 5000;
 const DIVISION_TIME_MS = 8000;
 const FEEDBACK_DELAY_MS = 700;
-const WRONG_FEEDBACK_DELAY_MS = 3000;
+const WRONG_FEEDBACK_DELAY_MS = 5000;
 const MIN_WEIGHT = 0.35;
 const MAX_WEIGHT = 6;
 
@@ -409,7 +409,7 @@ function handleResult(isCorrect) {
   renderDragonTiles();
   setFeedback(
     isCorrect ? 'success' : 'error',
-    isCorrect ? 'Brawo!' : '',
+    isCorrect ? 'Brawo!' : `Poprawna odpowiedź: ${state.currentQuestion.answer}`,
   );
   renderQuestion();
 
