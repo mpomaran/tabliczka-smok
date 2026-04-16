@@ -339,8 +339,8 @@ function buildHintText(question) {
       return 'Przy dzieleniu przez 10 skreśl jedno zero.';
     }
 
-    if (right === 5) {
-      return 'Przy dzieleniu przez 5 najpierw podziel przez 10, a potem pomnóż razy 2.';
+  if (right === 5) {
+      return 'Przy dzieleniu przez 5 pomyśl, jaka liczba pomnożona przez 5 da wynik.';
     }
 
     if (right === 2) {
@@ -366,23 +366,15 @@ function buildHintText(question) {
   }
 
   if (smaller === 5) {
-    return `${promptText} to połowa z ${bigger} x 10.`;
+    return `${promptText}: wynik mnożenia przez 5 to połowa wyniku mnożenia przez 10.`;
   }
 
   if (smaller === 9) {
-    return `${promptText} to ${bigger} x 10 minus ${bigger}.`;
+    return `${promptText}: mnożenie przez 9 to jak przez 10, tylko minus jeden czynnik, czyli ${bigger} x 10 - ${bigger}.`;
   }
 
   if (smaller === 4) {
-    return `${promptText}: przy mnożeniu przez 4 podwój i jeszcze raz podwój.`;
-  }
-
-  if (smaller === 8) {
-    return `${promptText}: przy mnożeniu przez 8 podwój trzy razy.`;
-  }
-
-  if (bigger === 7 || smaller === 7) {
-    return `${promptText}: przy 7 dojść od działania razy 5 albo razy 10.`;
+    return `${promptText}: przy mnożeniu przez 4 warto liczyć spokojnie krok po kroku.`;
   }
 
   if (answer > 50) {
