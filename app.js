@@ -13,11 +13,13 @@ const correctCountNode = document.getElementById('correct-count');
 const wrongCountNode = document.getElementById('wrong-count');
 const dragonProgressNode = document.getElementById('dragon-progress');
 const dragonCover = document.getElementById('dragon-cover');
+const divisionToggle = document.getElementById('division-toggle');
 const timeLeftNode = document.getElementById('time-left');
 const timerBar = document.getElementById('timer-bar');
 const timerFill = document.getElementById('timer-fill');
 const questionBoxNode = document.querySelector('.question-box');
 const questionTextNode = document.getElementById('question-text');
+const hintTextNode = document.getElementById('hint-text');
 const feedbackBadge = document.getElementById('feedback-badge');
 const answersGrid = document.getElementById('answers-grid');
 const quizCard = document.getElementById('quiz-card');
@@ -38,7 +40,7 @@ function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function createQuestionBank() {
+function createQuestionBank(includeDivision = false) {
   const bank = [];
 
   for (let left = 1; left <= 10; left += 1) {
@@ -55,17 +57,19 @@ function createQuestionBank() {
         weight: 1,
       });
 
-      bank.push({
-        id: `${left * right}:${right}`,
-        left: left * right,
-        right,
-        answer: left,
-        prompt: `${left * right} : ${right} = ?`,
-        type: 'division',
-        correctCount: 0,
-        wrongCount: 0,
-        weight: 1,
-      });
+      if (includeDivision) {
+        bank.push({
+          id: `${left * right}:${right}`,
+          left: left * right,
+          right,
+          answer: left,
+          prompt: `${left * right} : ${right} = ?`,
+          type: 'division',
+          correctCount: 0,
+          wrongCount: 0,
+          weight: 1,
+        });
+      }
     }
   }
 
@@ -74,6 +78,28 @@ function createQuestionBank() {
 
 function createRevealOrder() {
   return shuffle(Array.from({ length: 100 }, (_, index) => index));
+}
+
+function preferenceMetric(question) {
+  return question.type === 'division' ? question.left : question.answer;
+}
+
+function difficultyPreference(question) {
+  const metric = preferenceMetric(question);
+
+  if (metric > 50) {
+    return 4.8;
+  }
+
+  if (metric > 30) {
+    return 2.8;
+  }
+
+  if (metric >= 20) {
+    return 1.45;
+  }
+
+  return 0.9;
 }
 
 function recencyFactor(questionId, recentIds) {
@@ -101,7 +127,7 @@ function recencyFactor(questionId, recentIds) {
 function pickNextQuestion(questionBank, recentIds) {
   const entries = questionBank.map((question) => ({
     question,
-    effectiveWeight: question.weight * recencyFactor(question.id, recentIds),
+    effectiveWeight: question.weight * difficultyPreference(question) * recencyFactor(question.id, recentIds),
   }));
 
   const totalWeight = entries.reduce((sum, entry) => sum + entry.effectiveWeight, 0);
@@ -213,6 +239,7 @@ const state = {
   questionsServed: 0,
   scheduledRepeats: [],
   revealAnswerInQuestion: false,
+  divisionEnabled: false,
   feedbackType: 'idle',
   selectedOptionValue: null,
   locked: false,
@@ -303,6 +330,46 @@ function setFeedback(type, message) {
   questionBoxNode.classList.toggle('question-box--solved', state.revealAnswerInQuestion);
 }
 
+function buildHintText(question) {
+  if (question.type === 'division') {
+    return 'Dzielenie to mnożenie wspak.';
+  }
+
+  const { left, right, answer } = question;
+  const bigger = Math.max(left, right);
+  const smaller = Math.min(left, right);
+
+  if (left === right) {
+    return `To kwadrat liczby: ${left} × ${left} = ${answer}.`;
+  }
+
+  if (smaller === 5) {
+    return 'Rada: 5 × to połowa 10 ×.';
+  }
+
+  if (bigger === 9) {
+    return 'Rada: 9 × to 10 × minus jedna grupa.';
+  }
+
+  if (bigger === 4) {
+    return 'Rada: 4 × to podwójne podwójne.';
+  }
+
+  if (bigger === 8) {
+    return 'Rada: 8 × licz przez 2 ×, 4 × i jeszcze raz podwój.';
+  }
+
+  if (answer > 50) {
+    return 'Duży wynik: policz 5 ×, a potem dodaj brakujące grupy.';
+  }
+
+  if (answer > 30) {
+    return 'Większe iloczyny wracają częściej, żeby łatwiej je utrwalić.';
+  }
+
+  return 'Szukaj wzorów: podobne działania pomagają zapamiętać wynik.';
+}
+
 function renderStats() {
   revealedCountNode.textContent = `${state.revealedCount}/100`;
   dragonProgressNode.textContent = `${state.revealedCount}/100`;
@@ -316,6 +383,7 @@ function renderQuestion() {
     state.revealAnswerInQuestion,
   );
   questionTextNode.classList.toggle('question-text--solved', state.revealAnswerInQuestion);
+  hintTextNode.textContent = buildHintText(state.currentQuestion);
   answersGrid.innerHTML = '';
 
   state.currentOptions.forEach((option) => {
@@ -428,7 +496,7 @@ function resetGame() {
   clearInterval(state.timerId);
   clearTimeout(state.timeoutId);
 
-  state.questionBank = createQuestionBank();
+  state.questionBank = createQuestionBank(state.divisionEnabled);
   state.revealOrder = createRevealOrder();
   state.revealedCount = 0;
   state.correctCount = 0;
@@ -454,4 +522,9 @@ function resetGame() {
 buildDragonCover();
 restartButton.addEventListener('click', resetGame);
 playAgainButton.addEventListener('click', resetGame);
+divisionToggle.addEventListener('change', (event) => {
+  state.divisionEnabled = event.target.checked;
+  resetGame();
+});
+divisionToggle.checked = false;
 resetGame();
