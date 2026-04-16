@@ -19,7 +19,6 @@ const timerBar = document.getElementById('timer-bar');
 const timerFill = document.getElementById('timer-fill');
 const questionBoxNode = document.querySelector('.question-box');
 const questionTextNode = document.getElementById('question-text');
-const hintTextNode = document.getElementById('hint-text');
 const feedbackBadge = document.getElementById('feedback-badge');
 const answersGrid = document.getElementById('answers-grid');
 const quizCard = document.getElementById('quiz-card');
@@ -330,46 +329,6 @@ function setFeedback(type, message) {
   questionBoxNode.classList.toggle('question-box--solved', state.revealAnswerInQuestion);
 }
 
-function buildHintText(question) {
-  if (question.type === 'division') {
-    return 'Dzielenie to mnożenie wspak.';
-  }
-
-  const { left, right, answer } = question;
-  const bigger = Math.max(left, right);
-  const smaller = Math.min(left, right);
-
-  if (left === right) {
-    return `To kwadrat liczby: ${left} × ${left} = ${answer}.`;
-  }
-
-  if (smaller === 5) {
-    return 'Rada: 5 × to połowa 10 ×.';
-  }
-
-  if (bigger === 9) {
-    return 'Rada: 9 × to 10 × minus jedna grupa.';
-  }
-
-  if (bigger === 4) {
-    return 'Rada: 4 × to podwójne podwójne.';
-  }
-
-  if (bigger === 8) {
-    return 'Rada: 8 × licz przez 2 ×, 4 × i jeszcze raz podwój.';
-  }
-
-  if (answer > 50) {
-    return 'Duży wynik: policz 5 ×, a potem dodaj brakujące grupy.';
-  }
-
-  if (answer > 30) {
-    return 'Większe iloczyny wracają częściej, żeby łatwiej je utrwalić.';
-  }
-
-  return 'Szukaj wzorów: podobne działania pomagają zapamiętać wynik.';
-}
-
 function renderStats() {
   revealedCountNode.textContent = `${state.revealedCount}/100`;
   dragonProgressNode.textContent = `${state.revealedCount}/100`;
@@ -383,7 +342,6 @@ function renderQuestion() {
     state.revealAnswerInQuestion,
   );
   questionTextNode.classList.toggle('question-text--solved', state.revealAnswerInQuestion);
-  hintTextNode.textContent = buildHintText(state.currentQuestion);
   answersGrid.innerHTML = '';
 
   state.currentOptions.forEach((option) => {

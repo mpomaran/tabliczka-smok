@@ -51,7 +51,7 @@ button {
   width: min(100%, 460px);
   min-height: calc(100dvh - 28px);
   display: grid;
-  grid-template-rows: auto auto minmax(112px, 20dvh) minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(156px, 24dvh) minmax(0, 1fr);
   gap: 9px;
   padding: max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom));
   border-radius: 28px;
@@ -112,9 +112,9 @@ button {
 }
 
 .app-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
   gap: 8px;
 }
 
@@ -123,8 +123,10 @@ button {
 }
 
 .app-top__actions {
-  display: grid;
-  justify-items: end;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
   gap: 6px;
   flex: 0 0 auto;
 }
@@ -201,6 +203,9 @@ h1 {
 
 .dragon-card {
   padding: 10px;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 0;
 }
 
 .dragon-stage {
@@ -257,6 +262,7 @@ h1 {
 
 .quiz-card {
   grid-template-rows: auto auto 1fr;
+  min-height: 0;
 }
 
 .success-card {
@@ -302,7 +308,7 @@ h1 {
 
 .question-box {
   display: grid;
-  gap: 6px;
+  gap: 8px;
   padding: 10px;
   border-radius: 22px;
   background: #fffdf6;
@@ -315,15 +321,6 @@ h1 {
   text-align: center;
   font-weight: 900;
   letter-spacing: 0.02em;
-}
-
-.hint-text {
-  min-height: 16px;
-  text-align: center;
-  font-size: 0.72rem;
-  line-height: 1.25;
-  color: #8b5b32;
-  font-weight: 700;
 }
 
 .question-text--solved {
@@ -355,14 +352,14 @@ h1 {
 
 .answers-grid {
   display: grid;
-  grid-template-rows: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(64px, 1fr));
   gap: 10px;
   align-content: stretch;
   min-height: 0;
 }
 
 .answer-button {
-  height: 100%;
+  height: auto;
   min-height: 62px;
   border: 0;
   border-radius: 24px;
@@ -429,10 +426,6 @@ h1 {
     font-size: clamp(2rem, 3.6vw, 2.8rem);
   }
 
-  .hint-text {
-    font-size: 0.9rem;
-  }
-
   .answers-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: none;
@@ -453,7 +446,7 @@ h1 {
 
   .app-panel {
     min-height: calc(100dvh - 16px);
-    grid-template-rows: auto auto minmax(92px, 16dvh) minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(126px, 21dvh) minmax(0, 1fr);
     gap: 8px;
     padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom));
   }
@@ -477,13 +470,8 @@ h1 {
     font-size: clamp(1.28rem, 7vw, 2rem);
   }
 
-  .hint-text {
-    font-size: 0.66rem;
-    min-height: 14px;
-  }
-
   .answer-button {
-    min-height: 54px;
+    min-height: 58px;
     border-radius: 20px;
     font-size: clamp(1.2rem, 5.8vw, 1.8rem);
   }
@@ -514,5 +502,15 @@ h1 {
 
   .app-top__actions {
     gap: 4px;
+  }
+}
+
+@media (max-width: 380px) {
+  .app-top {
+    grid-template-columns: 1fr;
+  }
+
+  .app-top__actions {
+    justify-content: flex-start;
   }
 }
