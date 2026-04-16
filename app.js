@@ -19,7 +19,6 @@ const timerBar = document.getElementById('timer-bar');
 const timerFill = document.getElementById('timer-fill');
 const questionBoxNode = document.querySelector('.question-box');
 const questionTextNode = document.getElementById('question-text');
-const hintTextNode = document.getElementById('hint-text');
 const feedbackBadge = document.getElementById('feedback-badge');
 const answersGrid = document.getElementById('answers-grid');
 const quizCard = document.getElementById('quiz-card');
@@ -330,64 +329,6 @@ function setFeedback(type, message) {
   questionBoxNode.classList.toggle('question-box--solved', state.revealAnswerInQuestion);
 }
 
-function buildHintText(question) {
-  const { left, right, answer, type } = question;
-  const promptText = `${left} x ${right}`;
-
-  if (type === 'division') {
-    if (right === 10) {
-      return 'Przy dzieleniu przez 10 skreśl jedno zero.';
-    }
-
-  if (right === 5) {
-      return 'Przy dzieleniu przez 5 pomyśl, jaka liczba pomnożona przez 5 da wynik.';
-    }
-
-    if (right === 2) {
-      return 'Dzielenie przez 2 to wzięcie połowy.';
-    }
-
-    return `Pomyśl wspak: ${answer} x ${right} = ${left}.`;
-  }
-
-  const bigger = Math.max(left, right);
-  const smaller = Math.min(left, right);
-
-  if (smaller === 1) {
-    return `${promptText}: mnożenie przez 1 nic nie zmienia.`;
-  }
-
-  if (smaller === 2) {
-    return `${promptText}: mnożenie przez 2 to podwajanie.`;
-  }
-
-  if (smaller === 10) {
-    return `${promptText}: przy mnożeniu przez 10 dopisz zero.`;
-  }
-
-  if (smaller === 5) {
-    return `${promptText}: wynik mnożenia przez 5 to połowa wyniku mnożenia przez 10.`;
-  }
-
-  if (smaller === 9) {
-    return `${promptText}: mnożenie przez 9 to jak przez 10, tylko minus jeden czynnik, czyli ${bigger} x 10 - ${bigger}.`;
-  }
-
-  if (smaller === 4) {
-    return `${promptText}: przy mnożeniu przez 4 warto liczyć spokojnie krok po kroku.`;
-  }
-
-  if (answer > 50) {
-    return `${promptText}: duży wynik łatwiej policzyć krok po kroku.`;
-  }
-
-  if (answer > 30) {
-    return `${promptText}: zacznij od podobnego działania, które już pamiętasz.`;
-  }
-
-  return `${promptText}: zamiana miejsc się nie zmienia, bo ${left} x ${right} to tyle samo co ${right} x ${left}.`;
-}
-
 function renderStats() {
   revealedCountNode.textContent = `${state.revealedCount}/100`;
   dragonProgressNode.textContent = `${state.revealedCount}/100`;
@@ -401,7 +342,6 @@ function renderQuestion() {
     state.revealAnswerInQuestion,
   );
   questionTextNode.classList.toggle('question-text--solved', state.revealAnswerInQuestion);
-  hintTextNode.textContent = buildHintText(state.currentQuestion);
   answersGrid.innerHTML = '';
 
   state.currentOptions.forEach((option) => {

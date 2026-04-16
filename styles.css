@@ -308,7 +308,7 @@ h1 {
 
 .question-box {
   display: grid;
-  gap: 6px;
+  gap: 8px;
   padding: 10px;
   border-radius: 22px;
   background: #fffdf6;
@@ -321,15 +321,6 @@ h1 {
   text-align: center;
   font-weight: 900;
   letter-spacing: 0.02em;
-}
-
-.hint-text {
-  min-height: 18px;
-  text-align: center;
-  font-size: 0.76rem;
-  line-height: 1.25;
-  color: #8b5b32;
-  font-weight: 700;
 }
 
 .question-text--solved {
@@ -435,10 +426,6 @@ h1 {
     font-size: clamp(2rem, 3.6vw, 2.8rem);
   }
 
-  .hint-text {
-    font-size: 0.9rem;
-  }
-
   .answers-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: none;
@@ -481,11 +468,6 @@ h1 {
 
   .question-text {
     font-size: clamp(1.28rem, 7vw, 2rem);
-  }
-
-  .hint-text {
-    min-height: 16px;
-    font-size: 0.68rem;
   }
 
   .answer-button {
