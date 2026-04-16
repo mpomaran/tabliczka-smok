@@ -15,20 +15,19 @@
   <body>
     <main class="app-shell" id="app">
       <section class="app-panel">
-        <section class="mode-bar" aria-label="Ustawienia gry">
-          <label class="toggle-chip" for="division-toggle">
-            <input type="checkbox" id="division-toggle" />
-            <span class="toggle-chip__box" aria-hidden="true"></span>
-            <span class="toggle-chip__label">Dzielenie</span>
-          </label>
-        </section>
-
         <header class="app-top">
-          <div>
+          <div class="app-top__title">
             <p class="eyebrow">Smocza tabliczka</p>
             <h1>Do 100</h1>
           </div>
-          <button type="button" class="restart-button" id="restart-button">Restart</button>
+          <div class="app-top__actions">
+            <label class="toggle-chip" for="division-toggle">
+              <input type="checkbox" id="division-toggle" />
+              <span class="toggle-chip__box" aria-hidden="true"></span>
+              <span class="toggle-chip__label">Dzielenie</span>
+            </label>
+            <button type="button" class="restart-button" id="restart-button">Restart</button>
+          </div>
         </header>
 
         <section class="stats-panel" aria-label="Statystyki gry">

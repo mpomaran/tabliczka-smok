@@ -51,9 +51,9 @@ button {
   width: min(100%, 460px);
   min-height: calc(100dvh - 28px);
   display: grid;
-  grid-template-rows: auto auto auto minmax(140px, 24dvh) minmax(0, 1fr);
-  gap: 12px;
-  padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+  grid-template-rows: auto auto minmax(112px, 20dvh) minmax(0, 1fr);
+  gap: 9px;
+  padding: max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom));
   border-radius: 28px;
   background: rgba(255, 252, 242, 0.88);
   box-shadow: 0 18px 50px rgba(110, 69, 24, 0.18);
@@ -61,20 +61,15 @@ button {
   overflow: hidden;
 }
 
-.mode-bar {
-  display: flex;
-  justify-content: flex-start;
-}
-
 .toggle-chip {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
+  gap: 8px;
+  padding: 5px 10px;
   border-radius: 999px;
   background: rgba(255, 247, 229, 0.95);
   box-shadow: inset 0 0 0 1px rgba(20, 49, 45, 0.08);
-  font-size: 0.92rem;
+  font-size: 0.8rem;
   font-weight: 800;
   color: #5c4a2a;
 }
@@ -86,9 +81,9 @@ button {
 }
 
 .toggle-chip__box {
-  width: 22px;
-  height: 22px;
-  border-radius: 7px;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
   background: #fffdf6;
   box-shadow: inset 0 0 0 2px rgba(20, 49, 45, 0.18);
   position: relative;
@@ -103,12 +98,12 @@ button {
 .toggle-chip input:checked + .toggle-chip__box::after {
   content: "";
   position: absolute;
-  left: 7px;
-  top: 3px;
-  width: 6px;
-  height: 12px;
-  border-right: 3px solid #fff;
-  border-bottom: 3px solid #fff;
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
   transform: rotate(45deg);
 }
 
@@ -120,12 +115,23 @@ button {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
+}
+
+.app-top__title {
+  min-width: 0;
+}
+
+.app-top__actions {
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+  flex: 0 0 auto;
 }
 
 .eyebrow {
   margin: 0 0 6px;
-  font-size: 0.82rem;
+  font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -139,7 +145,7 @@ p {
 }
 
 h1 {
-  font-size: clamp(1.15rem, 4.8vw, 1.45rem);
+  font-size: clamp(1rem, 4.1vw, 1.25rem);
   line-height: 1;
   white-space: nowrap;
 }
@@ -147,11 +153,11 @@ h1 {
 .restart-button {
   border: 0;
   border-radius: 18px;
-  padding: 12px 16px;
-  min-height: 52px;
+  padding: 10px 12px;
+  min-height: 44px;
   background: #14312d;
   color: #fffef9;
-  font-size: 1rem;
+  font-size: 0.92rem;
   font-weight: 800;
   box-shadow: 0 10px 20px rgba(20, 49, 45, 0.2);
 }
@@ -163,11 +169,11 @@ h1 {
 .stats-panel {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  gap: 6px;
 }
 
 .stat-pill {
-  padding: 12px 10px;
+  padding: 9px 8px;
   border-radius: 18px;
   background: #fff7e5;
   text-align: center;
@@ -176,13 +182,13 @@ h1 {
 
 .stat-label {
   display: block;
-  font-size: 0.8rem;
+  font-size: 0.68rem;
   color: #8b5b32;
   margin-bottom: 4px;
 }
 
 .stat-pill strong {
-  font-size: 1.1rem;
+  font-size: 0.98rem;
 }
 
 .dragon-card,
@@ -194,7 +200,7 @@ h1 {
 }
 
 .dragon-card {
-  padding: 12px;
+  padding: 10px;
 }
 
 .dragon-stage {
@@ -235,18 +241,18 @@ h1 {
 }
 
 .dragon-caption {
-  margin-top: 10px;
+  margin-top: 6px;
   text-align: center;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   line-height: 1.1;
 }
 
 .quiz-card,
 .success-card {
   min-height: 0;
-  padding: 14px;
+  padding: 10px;
   display: grid;
-  gap: 14px;
+  gap: 10px;
 }
 
 .quiz-card {
@@ -260,7 +266,7 @@ h1 {
 
 .timer-wrap {
   display: grid;
-  gap: 8px;
+  gap: 6px;
 }
 
 .timer-head {
@@ -271,7 +277,7 @@ h1 {
 
 .timer-note {
   text-align: right;
-  font-size: 0.78rem;
+  font-size: 0.7rem;
   color: #8b5b32;
 }
 
@@ -296,15 +302,15 @@ h1 {
 
 .question-box {
   display: grid;
-  gap: 8px;
-  padding: 14px;
+  gap: 6px;
+  padding: 10px;
   border-radius: 22px;
   background: #fffdf6;
   transition: background-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .question-text {
-  font-size: clamp(1.8rem, 9vw, 3rem);
+  font-size: clamp(1.45rem, 7.8vw, 2.45rem);
   line-height: 1;
   text-align: center;
   font-weight: 900;
@@ -312,9 +318,9 @@ h1 {
 }
 
 .hint-text {
-  min-height: 20px;
+  min-height: 16px;
   text-align: center;
-  font-size: 0.83rem;
+  font-size: 0.72rem;
   line-height: 1.25;
   color: #8b5b32;
   font-weight: 700;
@@ -326,13 +332,13 @@ h1 {
 }
 
 .feedback-badge {
-  min-height: 28px;
+  min-height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  padding: 8px 12px;
-  font-size: 0.96rem;
+  padding: 6px 10px;
+  font-size: 0.84rem;
   font-weight: 800;
   background: rgba(20, 49, 45, 0.08);
 }
@@ -350,19 +356,19 @@ h1 {
 .answers-grid {
   display: grid;
   grid-template-rows: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
   align-content: stretch;
   min-height: 0;
 }
 
 .answer-button {
   height: 100%;
-  min-height: 68px;
+  min-height: 62px;
   border: 0;
   border-radius: 24px;
   background: linear-gradient(180deg, #2a9d8f, #207b70);
   color: #fffef9;
-  font-size: clamp(1.5rem, 7vw, 2.3rem);
+  font-size: clamp(1.35rem, 6.4vw, 2rem);
   font-weight: 900;
   box-shadow: 0 12px 24px rgba(42, 157, 143, 0.24);
   touch-action: manipulation;
@@ -395,11 +401,10 @@ h1 {
     width: min(100%, 920px);
     min-height: calc(100dvh - 44px);
     grid-template-columns: 1.05fr 0.95fr;
-    grid-template-rows: auto auto auto 1fr;
+    grid-template-rows: auto auto 1fr;
     gap: 16px;
   }
 
-  .mode-bar,
   .app-top,
   .stats-panel {
     grid-column: 1 / -1;
@@ -443,14 +448,14 @@ h1 {
 
 @media (max-height: 760px) {
   .app-shell {
-    padding: 10px;
+    padding: 8px;
   }
 
   .app-panel {
-    min-height: calc(100dvh - 20px);
-    grid-template-rows: auto auto auto minmax(110px, 20dvh) minmax(0, 1fr);
-    gap: 10px;
-    padding: max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom));
+    min-height: calc(100dvh - 16px);
+    grid-template-rows: auto auto minmax(92px, 16dvh) minmax(0, 1fr);
+    gap: 8px;
+    padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom));
   }
 
   .dragon-card,
@@ -461,33 +466,53 @@ h1 {
 
   .dragon-card,
   .quiz-card {
-    padding: 10px;
+    padding: 8px;
   }
 
   .question-box {
-    padding: 12px;
+    padding: 8px;
   }
 
   .question-text {
-    font-size: clamp(1.5rem, 8vw, 2.4rem);
+    font-size: clamp(1.28rem, 7vw, 2rem);
   }
 
   .hint-text {
-    font-size: 0.74rem;
-    min-height: 18px;
+    font-size: 0.66rem;
+    min-height: 14px;
   }
 
   .answer-button {
-    min-height: 58px;
+    min-height: 54px;
     border-radius: 20px;
-    font-size: clamp(1.35rem, 6.5vw, 2rem);
+    font-size: clamp(1.2rem, 5.8vw, 1.8rem);
   }
 
   h1 {
-    font-size: clamp(1rem, 4.4vw, 1.2rem);
+    font-size: clamp(0.92rem, 4vw, 1.08rem);
   }
 
   .dragon-caption {
-    font-size: 0.72rem;
+    font-size: 0.66rem;
+  }
+
+  .toggle-chip {
+    padding: 4px 8px;
+    font-size: 0.74rem;
+  }
+
+  .toggle-chip__box {
+    width: 16px;
+    height: 16px;
+  }
+
+  .restart-button {
+    min-height: 40px;
+    padding: 8px 10px;
+    font-size: 0.86rem;
+  }
+
+  .app-top__actions {
+    gap: 4px;
   }
 }
