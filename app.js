@@ -1,9 +1,23 @@
-﻿const MULTIPLICATION_TIME_MS = 5000;
-const DIVISION_TIME_MS = 8000;
+﻿const MULTIPLICATION_TIME_MS = 10000;
+const DIVISION_TIME_MS = 16000;
 const FEEDBACK_DELAY_MS = 700;
 const WRONG_FEEDBACK_DELAY_MS = 5000;
 const MIN_WEIGHT = 0.35;
 const MAX_WEIGHT = 6;
+const HARD_FACTOR_SET = new Set([6, 7, 8, 9]);
+const VERY_HARD_FACTS = new Set([
+  '6x8',
+  '8x6',
+  '6x9',
+  '9x6',
+  '7x8',
+  '8x7',
+  '7x6',
+  '6x7',
+  '7x9',
+  '9x7',
+  '7x7',
+]);
 
 const appShell = document.getElementById('app');
 const restartButton = document.getElementById('restart-button');
@@ -85,20 +99,31 @@ function preferenceMetric(question) {
 
 function difficultyPreference(question) {
   const metric = preferenceMetric(question);
+  let preference = 0.9;
 
   if (metric > 50) {
-    return 4.8;
+    preference = 4.8;
+  } else if (metric > 30) {
+    preference = 2.8;
+  } else if (metric >= 20) {
+    preference = 1.45;
   }
 
-  if (metric > 30) {
-    return 2.8;
+  if (question.type === 'multiplication') {
+    const { left, right } = question;
+
+    if (VERY_HARD_FACTS.has(question.id)) {
+      preference *= 2.4;
+    } else if (HARD_FACTOR_SET.has(left) && HARD_FACTOR_SET.has(right)) {
+      preference *= 1.85;
+    } else if (HARD_FACTOR_SET.has(left) || HARD_FACTOR_SET.has(right)) {
+      preference *= 1.35;
+    }
+  } else if (HARD_FACTOR_SET.has(question.right) || HARD_FACTOR_SET.has(question.answer)) {
+    preference *= 1.2;
   }
 
-  if (metric >= 20) {
-    return 1.45;
-  }
-
-  return 0.9;
+  return preference;
 }
 
 function recencyFactor(questionId, recentIds) {
@@ -146,13 +171,92 @@ function uniqueCandidates(values, correct) {
   return [...new Set(values)].filter((value) => value !== correct && value >= 1 && value <= 100);
 }
 
+function rankCandidates(values, correct, preferred = []) {
+  const preferredSet = new Set(preferred);
+
+  return uniqueCandidates(values, correct).sort((first, second) => {
+    const firstPreferred = preferredSet.has(first) ? 1 : 0;
+    const secondPreferred = preferredSet.has(second) ? 1 : 0;
+
+    if (firstPreferred !== secondPreferred) {
+      return secondPreferred - firstPreferred;
+    }
+
+    const diff = Math.abs(first - correct) - Math.abs(second - correct);
+
+    if (diff !== 0) {
+      return diff;
+    }
+
+    return first - second;
+  });
+}
+
+function similarMultiplicationValues(left, right) {
+  const hardFactors = [6, 7, 8, 9];
+  const values = [];
+
+  for (const factor of hardFactors) {
+    values.push(left * factor, factor * right);
+  }
+
+  values.push(
+    left * Math.max(1, right - 1),
+    left * Math.min(10, right + 1),
+    Math.max(1, left - 1) * right,
+    Math.min(10, left + 1) * right,
+    Math.max(1, left - 1) * Math.max(1, right - 1),
+    Math.min(10, left + 1) * Math.min(10, right + 1),
+    Math.max(1, left - 1) * Math.min(10, right + 1),
+    Math.min(10, left + 1) * Math.max(1, right - 1),
+  );
+
+  return values;
+}
+
+function similarDivisionValues(left, right, answer) {
+  const hardFactors = [6, 7, 8, 9];
+  const values = [];
+
+  for (const factor of hardFactors) {
+    if (left % factor === 0) {
+      values.push(left / factor);
+    }
+  }
+
+  values.push(
+    Math.max(1, answer - 1),
+    Math.min(100, answer + 1),
+    Math.max(1, answer - 2),
+    Math.min(100, answer + 2),
+    Math.max(1, Math.floor(left / Math.max(1, right - 1))),
+    Math.max(1, Math.floor(left / Math.min(10, right + 1))),
+    Math.max(1, right - 1),
+    Math.min(100, right + 1),
+    right,
+  );
+
+  return values;
+}
+
 function createAnswerOptions(question) {
   const { left, right, answer, type } = question;
-  const nearbyOffsets = [answer - 1, answer + 1, answer - 2, answer + 2, answer - 3, answer + 3];
-  let candidates = [];
+  const nearbyOffsets = [
+    answer - 1,
+    answer + 1,
+    answer - 2,
+    answer + 2,
+    answer - 3,
+    answer + 3,
+    answer - left,
+    answer + left,
+    answer - right,
+    answer + right,
+  ];
+  let rankedCandidates = [];
 
   if (type === 'multiplication') {
-    const neighborProducts = [
+    const closeProducts = [
       left * Math.max(1, right - 1),
       left * Math.min(10, right + 1),
       Math.max(1, left - 1) * right,
@@ -162,42 +266,59 @@ function createAnswerOptions(question) {
       left + right,
       answer + left,
       answer - right,
+      answer - left,
       Math.abs(left - right) * 10 || 10,
     ];
+    const hardConfusions = similarMultiplicationValues(left, right);
 
-    candidates = uniqueCandidates(
-      [...neighborProducts, ...nearbyOffsets, ...patternMistakes].sort(
-        (first, second) => Math.abs(first - answer) - Math.abs(second - answer),
-      ),
+    rankedCandidates = rankCandidates(
+      [...hardConfusions, ...closeProducts, ...nearbyOffsets, ...patternMistakes],
       answer,
+      hardConfusions,
     );
   } else {
-    const divisorNeighbors = [
-      Math.max(1, Math.floor(left / Math.max(1, right - 1))),
-      Math.max(1, Math.floor(left / Math.min(10, right + 1))),
-      Math.max(1, answer + 1),
-      Math.max(1, answer - 1),
-    ];
-    const patternMistakes = [
-      right,
-      Math.max(1, right - 1),
-      Math.min(100, right + 1),
-      Math.max(1, Math.round(left / 10)),
-    ];
+    const hardConfusions = similarDivisionValues(left, right, answer);
+    const patternMistakes = [Math.max(1, Math.round(left / 10)), right * 2, Math.max(1, right - 2)];
 
-    candidates = uniqueCandidates(
-      [...divisorNeighbors, ...nearbyOffsets, ...patternMistakes].sort(
-        (first, second) => Math.abs(first - answer) - Math.abs(second - answer),
-      ),
+    rankedCandidates = rankCandidates(
+      [...hardConfusions, ...nearbyOffsets, ...patternMistakes],
       answer,
+      hardConfusions,
     );
   }
 
-  const wrongAnswer = candidates[0] ?? Math.max(1, Math.min(100, answer + 1));
+  const wrongAnswers = rankedCandidates.slice(0, 5);
+
+  if (wrongAnswers.length < 5) {
+    const fallback = rankCandidates(
+      [
+        ...rankedCandidates,
+        answer + 4,
+        answer - 4,
+        answer + 5,
+        answer - 5,
+        answer + 6,
+        answer - 6,
+        answer + 7,
+        answer - 7,
+      ],
+      answer,
+    );
+
+    for (const candidate of fallback) {
+      if (wrongAnswers.length >= 5) {
+        break;
+      }
+
+      if (!wrongAnswers.includes(candidate)) {
+        wrongAnswers.push(candidate);
+      }
+    }
+  }
 
   return shuffle([
     { value: answer, isCorrect: true },
-    { value: wrongAnswer, isCorrect: false },
+    ...wrongAnswers.slice(0, 5).map((value) => ({ value, isCorrect: false })),
   ]);
 }
 
@@ -486,3 +607,4 @@ divisionToggle.addEventListener('change', (event) => {
 });
 divisionToggle.checked = false;
 resetGame();
+
