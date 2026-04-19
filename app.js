@@ -287,9 +287,9 @@ function createAnswerOptions(question) {
     );
   }
 
-  const wrongAnswers = rankedCandidates.slice(0, 5);
+  const wrongAnswers = rankedCandidates.slice(0, 3);
 
-  if (wrongAnswers.length < 5) {
+  if (wrongAnswers.length < 3) {
     const fallback = rankCandidates(
       [
         ...rankedCandidates,
@@ -306,7 +306,7 @@ function createAnswerOptions(question) {
     );
 
     for (const candidate of fallback) {
-      if (wrongAnswers.length >= 5) {
+      if (wrongAnswers.length >= 3) {
         break;
       }
 
@@ -318,7 +318,7 @@ function createAnswerOptions(question) {
 
   return shuffle([
     { value: answer, isCorrect: true },
-    ...wrongAnswers.slice(0, 5).map((value) => ({ value, isCorrect: false })),
+    ...wrongAnswers.slice(0, 3).map((value) => ({ value, isCorrect: false })),
   ]);
 }
 
